@@ -19,7 +19,7 @@ char activities_counter(int* armor) {
 }
 
 std::string attention(int* armor) {
-    if(!(*(armor)) && !(*(armor+3)) {
+    if(!(*(armor)) && !(*(armor+3))) {
         return "YOU HAVE BEEN NOTICED 👁";
     }
     if(!(*(armor+1)) && !(*(armor+2))) {
