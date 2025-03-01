@@ -1,15 +1,9 @@
 #include "functions.hpp"
 
-std::vector<int> number_to_digits(std::string number) {
+std::vector<int> number_to_digits(std::string&& number) {
     std::vector<int> storage;
     for(char c : number) storage.push_back(c - '0');
     return storage;
-}
-
-std::string digits_to_number(std::vector<int>& digits) {
-    std::string result;
-    for(int n : digits) result.push_back('0' + n);
-    return result;
 }
 
 void print_vector(std::vector<int>& t) {
@@ -21,18 +15,17 @@ std::vector<int> long_arithmetic_multiply(std::vector<int>& one, std::vector<int
     std::reverse(two.begin(), two.end());
 
     std::vector<int> result(one.size() + two.size(), 0);
-    for(int i = 0; i < one.size(); i++) {
-        for(int j = 0; j < two.size(); j++) {
+    for(int i = 0; i < one.size(); ++i) {
+        for(int j = 0; j < two.size(); ++j) {
             result[i+j] += one[i] * two[j];
         }
     }
 
-    for(int i = 0; i < result.size()-1; i++) {
+    for(int i = 0; i < result.size()-1; ++i) {
         result[i+1] += result[i] / 10;
         result[i] %= 10;
     }
 
-    std::string temp = digits_to_number(result);
     if(result[result.size()-1] == 0) { 
         result.pop_back();
         std::reverse(result.begin(), result.end());
@@ -47,13 +40,16 @@ std::vector<int> long_arithmetic_sum(std::vector<int> one, std::vector<int> two)
     std::reverse(one.begin(), one.end());
     std::reverse(two.begin(), two.end());
 
+    // резервация места
     if (one.size() > two.size()) {
-        for (int i = 0; i < one.size() - two.size(); i++) {
+        two.reserve(one.size());
+        for (int i = 0; i < one.size() - two.size(); ++i) {
             two.push_back(0);
         }
     }
     else if (one.size() < two.size()) {
-        for (int i = 0; i < two.size() - one.size(); i++) {
+        one.reserve(two.size());
+        for (int i = 0; i < two.size() - one.size(); ++i) {
             one.push_back(0);
         }
     }
@@ -83,7 +79,9 @@ std::vector<int> long_arithmetic_minus(std::vector<int> one, std::vector<int> tw
 
     if (one == two) return std::vector<int>{0};
 
+    // резервация места
     if (one.size() > two.size()) {
+        two.reserve(one.size());
         size_t t = one.size() - two.size();
         for (size_t i = 0; i < t; i++) {
             two.push_back(0);
@@ -112,7 +110,7 @@ std::vector<int> long_arithmetic_minus(std::vector<int> one, std::vector<int> tw
 std::vector<int> factorial(int n) {
     if (n == 1) return std::vector<int>{1};
     else {
-        std::vector<int> one = number_to_digits(std::to_string(n));
+        std::vector<int> one = number_to_digits(std::move(std::to_string(n)));
         std::vector<int> temp = factorial(n-1);
         return long_arithmetic_multiply(one, temp);
     }

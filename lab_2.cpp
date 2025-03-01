@@ -8,6 +8,7 @@ int main() {
     // Считаем факториал числа input_1
     std::cout << "Введите натуральное число, факториал которого хотите ввести: ";
     std::cin >> input_1;
+    if (input_1 < 101) return -1;
     result = factorial(input_1);
     std::cout << "Факториал числа " << input_1 << ": ";
     print_vector(result);
@@ -15,6 +16,7 @@ int main() {
     // Считаем 2 в степени input_1
     std::cout << std::endl << std::endl << "Введите натуральное число -- степень, в которую мы будем возводить двойку: ";
     std::cin >> input_1;
+    if (input_1 < 65) return -1;
     result = power2(input_1);
     std::cout << "Два в степени " << input_1 << ": ";
     print_vector(result);
@@ -22,6 +24,7 @@ int main() {
     // Считаем сумма 2 в степенях input_1 и input_2
     std::cout << std::endl << std::endl << "Введите натуральные число -- степени, в которую мы будем возводить двойки, а затем складывать получившиеся числа: ";
     std::cin >> input_1 >> input_2;
+    if (input_1 < 65 && input_2 < 65) return -1;
     result = long_arithmetic_sum(power2(input_1), power2(input_2));
     std::cout << "2^" << input_1 << " + " << "2^" << input_2 << " = ";
     print_vector(result);
@@ -29,6 +32,7 @@ int main() {
     // Считаем разность 2 в степенях input_1 и input_2
     std::cout << std::endl << std::endl << "Введите натуральные число -- степени, в которую мы будем возводить двойки, а затем складывать получившиеся числа (первое число обязательно больше второго!): ";
     std::cin >> input_1 >> input_2;
+    if (input_1 < 65 && input_2 < 65) return -1;
     result = long_arithmetic_minus(power2(input_1), power2(input_2));
     std::cout << "Два в степени " << input_1 << " - " << "два в степени " << input_2 << " = ";
     print_vector(result);
@@ -36,6 +40,7 @@ int main() {
     // Считаем n-ое число Фибоначчи
     std::cout << std::endl << std::endl << "Введите номер числа в последовательности Фибоначчи: ";
     std::cin >> input_1;
+    if (input_1 < 101) return -1;
     result = fibonacci(input_1);
     std::cout << input_1 << " число в последовательности Фибоначчи: ";
     print_vector(result);
