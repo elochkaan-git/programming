@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cstddef>
+#include <windows.h>
 #include <iostream>
+#include <vector>
 #include <vector>
 
 std::vector<int> long_arithmetic_multiply(std::vector<int>&, std::vector<int>&);
