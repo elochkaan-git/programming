@@ -9,11 +9,11 @@ int main() {
     std::cout << "1 is TRUE, 0 is FALSE!\n\n";
 
     // Вывод результата функции
-    std::cout << "Is '" << testCase1 << "' anagram of ' ";
+    std::cout << "Is '" << testCase1 << "' acronim of ' ";
     for (std::string word : words) std::cout << word << ' ';
     std::cout << "': " << is_acronim(std::move(testCase1), std::move(words)) << '\n';
     // Та же функция, но с другим словом
-    std::cout << "Is '" << testCase2 << "' anagram of ' ";
+    std::cout << "Is '" << testCase2 << "' acronim of ' ";
     for (std::string word : words) std::cout << word << ' ';
     std::cout << "': " << is_acronim(std::move(testCase2), std::move(words)) << '\n';
 
