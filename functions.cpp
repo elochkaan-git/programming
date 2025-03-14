@@ -1,6 +1,7 @@
 #include "functions.hpp"
 #include <algorithm>
 
+// Проверяет, является ли слово s акронимом для набора слов words
 bool is_acronim(std::string&& s, std::vector<std::string>&& words) {
     std::string firstLetters = "";
     for (std::string word : words) firstLetters += word[0];
@@ -8,6 +9,7 @@ bool is_acronim(std::string&& s, std::vector<std::string>&& words) {
     return false;
 }
 
+// Проверяет, является ли слово (набор слов) палиндромом
 bool is_palindrome(std::string&& s) {
     while (s.find(' ') != std::string::npos) {
         s.replace(s.find(' '), 1, "");
@@ -24,6 +26,8 @@ bool is_palindrome(std::string&& s) {
     return true;
 }
 
+// Считает количество очков для каждого слова из списка words и возвращает максимальное
+// значение вместе со словом
 std::pair<std::string, unsigned int> max_score(
     std::vector<std::string>&& words,
     std::vector<char>&& letters,
