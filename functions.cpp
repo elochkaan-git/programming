@@ -26,14 +26,13 @@ bool is_palindrome(std::string&& s) {
     return true;
 }
 
-// Считает количество очков для каждого слова из списка words и возвращает максимальное
-// значение вместе со словом
-std::pair<std::string, unsigned int> max_score(
+// Считает количество очков для каждого слова из списка words и возвращает максимальное значение
+unsigned int max_score(
     std::vector<std::string>&& words,
     std::vector<char>&& letters,
     std::vector<unsigned int>&& score
 ) {
-    std::string resultWord = ""; unsigned int maxScore = 0;
+    unsigned int maxScore = 0;
     for (std::string word : words) {
         unsigned int tempScore = 0; bool isAnagram = true;
         for (char ch : word) {
@@ -45,13 +44,10 @@ std::pair<std::string, unsigned int> max_score(
             }
         }
 
-        if (isAnagram) {
-            if (tempScore > maxScore) {
-                resultWord = word;
-                maxScore = tempScore;
-            }
+        if (isAnagram && tempScore > maxScore) {
+            maxScore = tempScore;
         }
     }
 
-    return  std::make_pair(resultWord, maxScore);
+    return maxScore;
 }
