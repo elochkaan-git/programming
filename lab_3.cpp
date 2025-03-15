@@ -22,7 +22,7 @@ int main() {
 
     // Инициализация переменных для третьей задачи, а также проверка функции для этой же задачи
     std::vector<std::string> words_1 = {"hot", "dad", "is", "bad"};
-    std::vector<char> letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    std::vector<char> letters = {'a', 'b', 'd', 'd'};
     std::vector<unsigned int> scores = {10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
     unsigned int result = max_score(std::move(words_1), std::move(letters), std::move(scores));
     std::cout << "The highest score: " << result;

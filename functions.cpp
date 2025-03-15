@@ -4,7 +4,7 @@
 // Проверяет, является ли слово s акронимом для набора слов words
 bool is_acronim(std::string&& s, std::vector<std::string>&& words) {
     std::string firstLetters = "";
-    for (std::string word : words) firstLetters += word[0];
+    for (std::string word : words) firstLetters += word.at(0);
     if (s == firstLetters) return true;
     return false;
 }
