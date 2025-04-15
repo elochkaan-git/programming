@@ -1,3 +1,5 @@
 .cache
 build
 .vscode
+assert_testing
+gtest_testing
