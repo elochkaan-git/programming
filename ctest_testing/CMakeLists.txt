@@ -2,6 +2,7 @@ cmake_minimum_required ( VERSION 3.14)
 project ( unittests CXX)
 set( CMAKE_CXX_STANDARD 17)
 set( CXX_STANDARD_REQUIRED TRUE)
+set(CTEST_BINARY_DIRECTORY out/build/lfb)
 
 if (MSVC)
     # warning level 4 and all warnings as errors
