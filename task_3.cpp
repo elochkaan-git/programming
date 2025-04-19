@@ -1,7 +1,7 @@
 #include "image.hpp"
 
 int main() {
-    cv::Mat image = cv::imread(".\\paladine.jpg");
+    cv::Mat image = cv::imread(".\\image.jpg");
     std::string hash_before = hash_image(image);
     std::cout << "Hash before changes: " << hash_before << '\n';
     change_pixel(image);
