@@ -54,6 +54,8 @@ void HashTable::remove(std::string name) {
             return;
         }
     }
+
+    std::cout << "No such item!\n\n";
 }
 
 unsigned long long HashTable::find(std::string name) {
