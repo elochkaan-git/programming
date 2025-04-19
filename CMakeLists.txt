@@ -1,5 +1,12 @@
-cmake_minimum_required(VERSION 3.10) # Минимальная версия CMake
-project(ObjectDetection) # Имя проекта
-find_package(OpenCV REQUIRED) # Поиск пакета OpenCV
-add_executable(ObjectDetection main.cpp) # Создание исполняемого файла
-target_link_libraries(ObjectDetection ${OpenCV_LIBS}) # Линковка с библиотеками OpenCV
+cmake_minimum_required(VERSION 3.10)
+
+project(hash_and_files)
+
+add_executable(hash task_1.cpp hash.cpp hash.hpp)
+
+add_executable(store task_2.cpp store.cpp store.hpp)
+
+find_package(OpenCV REQUIRED)
+find_package(OpenSSL REQUIRED)
+add_executable(hash_image task_3.cpp image.hpp image.cpp)
+target_link_libraries(hash_image ${OpenCV_LIBRARIES} OpenSSL::Crypto)
