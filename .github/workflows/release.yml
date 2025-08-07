@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/github_actions
+      - lab_1_a
 
 jobs:
   build:
