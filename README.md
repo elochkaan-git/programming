@@ -1,2 +1,1 @@
-# programming
-Labs for Programming, TPU
+# Шаблон настройки GitHub Actions
