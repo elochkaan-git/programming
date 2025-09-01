@@ -30,11 +30,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           title: v0.0.${{ github.run_number }}
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'branch'
-        with:
-          files: |
-            build/helloworld-0.0.${{ github.run_number }}-Linux.deb
-  
+          
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release v0.0.${{ github.run_number }} build/helloworld-0.0.${{ github.run_number }}-Linux.deb
