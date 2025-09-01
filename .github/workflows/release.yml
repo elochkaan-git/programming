@@ -29,4 +29,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release create v0.0.${{ github.run_number }} build/helloworld-0.0.${{ github.run_number }}-Linux.deb
+          gh release create v0.1.${{ github.run_number }} build/helloworld-0.1.${{ github.run_number }}-Linux.deb
