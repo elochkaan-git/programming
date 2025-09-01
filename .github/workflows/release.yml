@@ -22,7 +22,7 @@ jobs:
         run: cmake . -DPATCH_VERSION=${{ github.run_number }}
 
       - name: Build project
-        run: cmake -B build -S . ; cmake --build build ; cmake --build build --target test ; cmake --build . --target package
+        run: cmake -B build -S . ; cmake --build build ; cmake --build build --target test ; cmake --build build --target package
           
       - name: Upload Release Asset
         env:
