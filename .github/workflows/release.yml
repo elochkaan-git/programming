@@ -39,20 +39,14 @@ jobs:
         with:
           submodules: true
 
-      - name: Install boost
-        uses: MarkusJx/install-boost@v2
-        id: install-boost
-        with:
-          boost_version: 1.78.0
-          boost_install_dir: C:\boost
-          platform_version: 2022
-          toolset: msvc
-
-      - name: Get Cmake
-        uses: lukka/get-cmake@v3.26.0
+      - name: Install Boost
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install boost
 
       - name: Configure Cmake
-        run: cmake -B build -S . ; cmake build -DPATCH_VERSION=${{ github.run_number }}
+        run: cmake -B build -S . ; cmake build -DPATCH_VERSION=${{ github.run_number }} -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: Build project
         run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package
