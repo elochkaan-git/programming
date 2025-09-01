@@ -7,7 +7,7 @@ on:
       - feature/github_actions
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
@@ -30,3 +30,29 @@ jobs:
         shell: bash
         run: |
           gh release create v0.1.${{ github.run_number }} build/helloworld-0.1.${{ github.run_number }}-Linux.deb
+
+  windows:
+    runs-on: windows-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2
+        id: install-boost
+        with:
+          boost_version: 1.73.0
+          boost_install_dir: C:\boost
+          platform_version: 2019
+          toolset: msvc
+
+      - name: Get Cmake
+        uses: lukka/get-cmake@v3.26.0
+
+      - name: Configure Cmake
+        run: cmake -B build -S . ; cmake build -DPATCH_VERSION=${{ github.run_number }}
+
+      - name: Build project
+        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package
