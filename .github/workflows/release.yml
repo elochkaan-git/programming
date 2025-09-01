@@ -23,17 +23,10 @@ jobs:
 
       - name: Build project
         run: cmake -B build -S . ; cmake --build build ; cmake --build build --target test ; cmake --build . --target package
-
-      - name: Create Release
-        uses: elgohr/Github-Release-Action@v5
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          title: v0.0.${{ github.run_number }}
           
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release v0.0.${{ github.run_number }} build/helloworld-0.0.${{ github.run_number }}-Linux.deb
+          gh release create v0.0.${{ github.run_number }} build/helloworld-0.0.${{ github.run_number }}-Linux.deb
