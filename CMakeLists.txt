@@ -62,7 +62,7 @@ endif()
 install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
 
 if (MSVC)
-    set(CPACK_GENERATOR NSIS)
+    set(CPACK_GENERATOR ZIP)
 else ()
     set(CPACK_GENERATOR DEB)
 endif()
