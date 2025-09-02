@@ -5,7 +5,7 @@ set(PROJECT_VESRION 0.1.${PATCH_VERSION})
 
 project(helloworld VERSION ${PROJECT_VESRION})
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework REQUIRED NO_MODULE)
 
 configure_file(version.h.in version.h)
 
@@ -22,7 +22,9 @@ target_include_directories(helloworld
 )
 set_target_properties(test_version PROPERTIES
     COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-    INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
+)
+target_include_directories(test_version PRIVATE
+    ${Boost_INCLUDE_DIR}
 )
 
 target_link_libraries(helloworld_cli PRIVATE
