@@ -46,7 +46,7 @@ jobs:
           .\vcpkg\vcpkg install boost-test --triplet x64-windows
 
       - name: Configure Cmake
-        run: cmake -B build -S . -G "Visual Studio 17 2022" -A x64; cmake build -DPATCH_VERSION=${{ github.run_number }} -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake 
+        run: cmake -B build -S . -G "Visual Studio 17 2022" -A x64; cmake build -DPATCH_VERSION=${{ github.run_number }} -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake 
 
       - name: Build project
         run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package
