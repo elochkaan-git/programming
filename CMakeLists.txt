@@ -23,13 +23,15 @@ target_compile_features(main PRIVATE cxx_std_17)
 
 execute_process(
   COMMAND sh -c ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.sh
+  OUTPUT_VARIABLE script_output
   RESULT_VARIABLE script_result
 )
 
 if (${script_result} EQUAL 1)
-  message(STATUS "Script output: ${script_result}")
+  message(STATUS "Script output: ${script_output}")
 else()
-  message(STATUS "Script output: ${script_result}")
+  message(STATUS "Script output: ${script_output}")
+  string(REGEX REPLACE "v" "" updated_version "${script_output}")
 endif()
 
 
