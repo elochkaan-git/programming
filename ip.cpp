@@ -7,12 +7,19 @@ IP::split(std::string& ip_) const
     int bytes[4] = {0, 0, 0, 0};
     short int ptr = 0;
 
+    std::string temp_number = "";
     unsigned long i = 0;
-    while(i != std::string::npos) {
-        std::string temp = ip_.substr(i == 0 ? 0 : i + 1, ip_.find('.', i + 1) - (i == 0 ? 0 : i + 1));
-        bytes[ptr] = std::stoi(temp);
-        ptr++;
-        i = ip_.find('.', i + 1);
+    while(i != ip_.size()) {
+        if (ip_.at(i) == '.') {
+            bytes[ptr] = std::stoi(temp_number);
+            ptr++;
+            i++;
+            temp_number = "";
+        }
+        else {
+            temp_number.push_back(ip_.at(i));
+            i++;
+        }
     }
 
     return std::make_tuple(bytes[0], bytes[1], bytes[2], bytes[3]);
@@ -21,9 +28,9 @@ IP::split(std::string& ip_) const
 void
 IP::print() const
 {
-    std::cout << std::get<0>(ip) << ' '
-              << std::get<1>(ip) << ' '
-              << std::get<2>(ip) << ' '
+    std::cout << std::get<0>(ip) << '.'
+              << std::get<1>(ip) << '.'
+              << std::get<2>(ip) << '.'
               << std::get<3>(ip) << std::endl;
 }
 
