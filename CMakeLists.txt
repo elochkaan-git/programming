@@ -26,7 +26,7 @@ execute_process(
   RESULT_VARIABLE script_result
 )
 
-if (${script_result} STREQUAL FAIL)
+if (${script_result} EQUAL 1)
   message(STATUS "Script output: ${script_result}")
 else()
   message(STATUS "Script output: ${script_result}")
