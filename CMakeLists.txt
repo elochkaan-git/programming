@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-project(lab_2_a)
+
+set(VERSION_PATCH "1")
+set(PROJECT_VERSION 0.1.${VERSION_PATCH})
+
+project(lab_2_a VERSION ${PROJECT_VERSION})
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,6 +20,18 @@ file(GLOB TEST_SOURCES "tests/*.cpp")
 
 add_executable(main ${SOURCES})
 target_compile_features(main PRIVATE cxx_std_17)
+
+execute_process(
+  COMMAND sh -c ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.sh
+  RESULT_VARIABLE script_result
+)
+
+if (${script_result} STREQUAL FAIL)
+  message(STATUS "Script output: ${script_result}")
+else()
+  message(STATUS "Script output: ${script_result}")
+endif()
+
 
 enable_testing()
 add_executable(testing ${TEST_SOURCES})
