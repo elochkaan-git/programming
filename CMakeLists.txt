@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 
 set(VERSION_PATCH "1")
 set(PROJECT_VERSION 0.1.${VERSION_PATCH})
 
-project(lab_2_a VERSION ${PROJECT_VERSION})
+project(ip_reader VERSION ${PROJECT_VERSION})
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,25 +19,55 @@ file(GLOB SOURCES "*.cpp")
 file(GLOB TEST_SOURCES "tests/*.cpp")
 
 add_executable(main ${SOURCES})
-target_compile_features(main PRIVATE cxx_std_17)
-
-execute_process(
-  COMMAND sh -c ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.sh
-  OUTPUT_VARIABLE script_output
-  RESULT_VARIABLE script_result
-)
-
-if (${script_result} EQUAL 1)
-  message(STATUS "Script output: ${script_output}")
-else()
-  message(STATUS "Script output: ${script_output}")
-  string(REGEX REPLACE "v" "" updated_version "${script_output}")
-endif()
-
-
-enable_testing()
 add_executable(testing ${TEST_SOURCES})
+
+target_compile_features(main PRIVATE cxx_std_17)
 set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
 target_link_libraries(testing GTest::gtest_main)
+
+execute_process(
+  COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.py
+)
+execute_process(
+  COMMAND git describe --abbrev=0 --tags
+  OUTPUT_VARIABLE tag
+)
+string(SUBSTRING "${tag}" 1 -1 clear_tag)
+string(REPLACE "." ";" list_tag "${clear_tag}")
+list(GET list_tag 0 MAJOR_VERSION)
+list(GET list_tag 1 MINOR_VERSION)
+list(GET list_tag 2 PATCH_VERSION)
+
+set(CPACK_PACKAGE_VERSION_MAJOR "${MAJOR_VERSION}")
+set(CPACK_PACKAGE_VERSION_MINOR "${MINOR_VERSION}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PATCH_VERSION}")
+set(PROJECT_VERSION "${MAJOR_VERSION}"."${MINOR_VERSION}"."${PATCH_VERSION}")
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
+set(CPACK_PACKAGE_CONTACT elochkaan@gmail.com)
+
+if (MSVC)
+  target_compile_options(main PRIVATE
+    /W4
+  )
+  target_compile_options(test_version PRIVATE
+    /W4
+)
+else ()
+  target_compile_options(main PRIVATE
+    -Wall -Wextra -pedantic
+  )
+  target_compile_options(testing PRIVATE
+    -Wall -Wextra -pedantic
+  )
+endif()
+
+if (MSVC)
+    set(CPACK_GENERATOR ZIP)
+else ()
+    set(CPACK_GENERATOR DEB)
+endif()
+
+enable_testing()
 include(GoogleTest)
+include(CPack)
 gtest_discover_tests(testing)
