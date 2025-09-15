@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <vector>
 #include <fstream>
-#include <iostream>
 
 bool
 compare(IP& a, IP& b)
@@ -45,14 +44,14 @@ main()
 
     std::sort(ips.begin(), ips.end(), compare);
     for(IP& ip : ips) ip.print();
-    std::cout << "==========================================\n";
+    // std::cout << "==========================================\n";
 
     for(IP& ip : ips) if (isFirstByteEqualOne(ip)) ip.print();
-    std::cout << "==========================================\n";
+    // std::cout << "==========================================\n";
 
     for(IP& ip : ips) if (is46and70(ip)) ip.print();
-    std::cout << "==========================================\n";
+    // std::cout << "==========================================\n";
 
     for(IP& ip : ips) if (is46any(ip)) ip.print();
-    std::cout << "==========================================\n";
+    // std::cout << "==========================================\n";
 }

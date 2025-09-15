@@ -3,37 +3,52 @@ name: 'C++ programming. Laboratory work 2'
 on:
   push:
     branches:
-      - lab_1_a
+      - lab_2_a
       - feature/github_actions
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: $ {{ matrix.os }}
+  linux:
+    runs-on: ubuntu-latest
     permissions: write-all
     steps:
       - uses: actions/checkout@v4
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
-      - run: cmake --build .
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          submodules: true
+
+      - name: Configure Cmake
+        run: cmake -B build -S .
+
+      - name: Build project
+        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
+          
       - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG=$(git describe --abbrev=0 --tags)
+          gh release create "${TAG}" build/ip_reader-${TAG}-Linux.deb
+
+  windows:
+    runs-on: windows-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_content_type: application/vnd.debian.binary-package
+          submodules: true
+
+      - name: Configure Cmake
+        shell: cmd
+        run: |
+          cmake -B build -S . -G "Visual Studio 17 2022" -A x64
+
+      - name: Build project
+        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
+
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: cmd
+        run: |
+          TAG=$(git describe --abbrev=0 --tags)
+          gh release upload "${TAG}" build/ip_reader-${TAG}-win64.zip
