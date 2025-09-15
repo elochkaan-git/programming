@@ -20,7 +20,7 @@ if current_tag == '':
             last_tag = last_tag.replace('v', '', 1)
         version = [int(i) for i in last_tag.split('.')]
 
-    last_commit_with_last_tag = subprocess.run(['git', 'log', '-1', last_tag], capture_output=True, text=True).stdout.split('\n')[0].split()[1]
+    last_commit_with_last_tag = subprocess.run(['git', 'log', '-1', last_tag], capture_output=True, text=True).stdout.split('\n')[0]
     print(f'Last commit of tag {last_tag} is {last_commit_with_last_tag}')
     commits = subprocess.run(['git', 'log', f'{last_commit_with_last_tag}..{last_commit}', '--format=%B'], capture_output=True, text=True).stdout.split('\n\n')[::-1]
 
