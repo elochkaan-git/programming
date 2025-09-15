@@ -35,7 +35,7 @@ execute_process(
   OUTPUT_VARIABLE tag
 )
 string(LENGTH ${tag} tag_len)
-math(EXPR new_tag_len "${tag_len} - 2")
+math(EXPR new_tag_len "${tag_len} - 1")
 string(SUBSTRING "${tag}" 0 ${new_tag_len} clear_tag)
 string(REPLACE "." ";" list_tag "${clear_tag}")
 list(GET list_tag 0 MAJOR_VERSION)
