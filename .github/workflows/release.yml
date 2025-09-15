@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           TAG=$(git describe --abbrev=0 --tags)
-          gh release create "${TAG}" build/ip_reader-${TAG}-Linux.deb
+          gh release create "${TAG}" bin/ip_reader-${TAG}-Linux.deb
 
   windows:
     needs: linux
@@ -50,4 +50,4 @@ jobs:
         shell: cmd
         run: |
           TAG=$(git describe --abbrev=0 --tags)
-          gh release upload "${TAG}" build/ip_reader-${TAG}-win64.zip
+          gh release upload "${TAG}" bin/ip_reader-${TAG}-win64.zip
