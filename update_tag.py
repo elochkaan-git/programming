@@ -6,7 +6,7 @@ last_commit = subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, 
 print(f'Last commit is {last_commit}')
 
 current_tag = subprocess.run(['git', 'describe', '--contains', last_commit], capture_output=True, text=True).stdout.replace('\n', '')
-print(f'Current tag is {current_tag if current_tag != '' else None}')
+print(f"Current tag is {current_tag if current_tag != '' else None}")
 
 if current_tag == '':
     print('Commit doesn\'t have a tag')
