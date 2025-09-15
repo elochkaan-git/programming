@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-tags: 0
+          fetch-depth: 0
 
       - name: Configure Cmake
         run: cmake -B build -S .
