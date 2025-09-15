@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+# YAPPY
 
 last_commit = subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.replace('\n', '')
 print(f'Last commit is {last_commit}')
