@@ -33,7 +33,7 @@ if current_tag == '':
         elif 'fix' in commit:
             version[2] += 1
     
-    version_s = f"v{'.'.join([str(i) for i in version])}"
+    version_s = f"{'.'.join([str(i) for i in version])}"
     print(f'New version is {version_s}')
     subprocess.run(['git', 'tag', version_s, last_commit])
     print('Successful tagged last commit')
