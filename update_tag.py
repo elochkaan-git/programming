@@ -39,6 +39,7 @@ if current_tag == '':
     print(f'New version is {version_s}')
     subprocess.run(['git', 'tag', version_s, last_commit])
     print('Successful tagged last commit')
+    subprocess.run(['git', 'push', '--tags'])
 else:
     print('Commit does have a tag')
 
