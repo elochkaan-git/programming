@@ -12,11 +12,11 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-tags: 0
 
       - name: Configure Cmake
-        run: |
-          git describe --abbrev=0 --tags
-          cmake -B build -S .
+        run: cmake -B build -S .
 
       - name: Build project
         run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
