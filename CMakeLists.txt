@@ -54,7 +54,7 @@ if (MSVC)
   target_compile_options(main PRIVATE
     /W4
   )
-  target_compile_options(test_version PRIVATE
+  target_compile_options(testing PRIVATE
     /W4
 )
 else ()
