@@ -24,7 +24,9 @@ jobs:
           generator: ${{
             matrix.os == 'ubuntu-latest' && 'Unix Makefiles' ||
             matrix.os == 'windows-latest' && 'Visual Studio 17 2022'}}
-        run: cmake -B build -S . -G "${generator}" -A x64
+          architecture: ${{
+            matrix.os == 'windows-latest' && '-A x64'}}
+        run: cmake -B build -S . -G "${generator}" ${architecture} 
 
       - name: Build project
         run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
