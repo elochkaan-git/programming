@@ -9,10 +9,9 @@ on:
 jobs:
   build:
     strategy:
+      max-parallel: 1
       matrix:
         os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
     permissions: write-all
@@ -35,10 +34,13 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ext: ${{
+            matrix.os == 'ubuntu-latest' && 'Linux.deb' ||
+            matrix.os == 'windows-latest' && 'win64.zip'}}
         shell: bash
         run: |
           TAG=$(git describe --abbrev=0 --tags)
           if gh release view "${TAG}" > /dev/null 2>&1; 
-          then gh release upload "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
-          else gh release create "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
+          then gh release upload "${TAG}" bin/ip_reader-${TAG}-${ext};
+          else gh release create "${TAG}" bin/ip_reader-${TAG}-${ext};
           fi
