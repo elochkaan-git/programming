@@ -7,16 +7,24 @@ on:
       - feature/github_actions
 
 jobs:
-  linux:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     permissions: write-all
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Configure Cmake
-        run: cmake -B build -S .
+        env:
+          generator: ${{
+            matrix.os == 'ubuntu-latest' && 'Unix Makefiles' ||
+            matrix.os == 'windows-latest' && 'Visual Studio 17 2022'}}
+        run: cmake -B build -S . -G "${generator}" -A x64
 
       - name: Build project
         run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
@@ -30,32 +38,4 @@ jobs:
           if gh release view "${TAG}" > /dev/null 2>&1; 
           then gh release upload "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
           else gh release create "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
-          fi
-
-  windows:
-    needs: linux
-    runs-on: windows-latest
-    permissions: write-all
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure Cmake
-        shell: cmd
-        run: |
-          cmake -B build -S . -G "Visual Studio 17 2022" -A x64
-
-      - name: Build project
-        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
-
-      - name: Upload Release Asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          TAG=$(git describe --abbrev=0 --tags)
-          if gh release view "${TAG}" > /dev/null 2>&1; 
-          then gh release upload "${TAG}" bin/ip_reader-${TAG}-win64.zip;
-          else gh release create "${TAG}" bin/ip_reader-${TAG}-win64.zip;
           fi
