@@ -27,7 +27,10 @@ jobs:
         shell: bash
         run: |
           TAG=$(git describe --abbrev=0 --tags)
-          gh release create "${TAG}" bin/ip_reader-${TAG}-Linux.deb
+          if gh release view "${TAG}" > /dev/null 2>&1; 
+          then gh release upload "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
+          else gh release create "${TAG}" bin/ip_reader-${TAG}-Linux.deb;
+          fi
 
   windows:
     needs: linux
@@ -52,4 +55,7 @@ jobs:
         shell: bash
         run: |
           TAG=$(git describe --abbrev=0 --tags)
-          gh release upload "${TAG}" bin/ip_reader-${TAG}-win64.zip
+          if gh release view "${TAG}" > /dev/null 2>&1; 
+          then gh release upload "${TAG}" bin/ip_reader-${TAG}-win64.zip;
+          else gh release create "${TAG}" bin/ip_reader-${TAG}-win64.zip;
+          fi
