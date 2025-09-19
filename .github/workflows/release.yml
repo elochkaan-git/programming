@@ -1,0 +1,43 @@
+name: 'C++ programming. Laboratory work 2'
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Cmake
+        env:
+          flags: ${{
+            matrix.os == 'ubuntu-latest' && '-G Unix Makefiles' ||
+            matrix.os == 'windows-latest' && '-G "Visual Studio 17 2022" -A x64'}}
+        run: cmake -B build -S . "$flags"
+
+      - name: Build project
+        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
+          
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ext: ${{
+            matrix.os == 'ubuntu-latest' && 'Linux.deb' ||
+            matrix.os == 'windows-latest' && 'win64.zip'}}
+        shell: bash
+        run: |
+          TAG=$(git describe --abbrev=0 --tags)
+          if gh release view "${TAG}" > /dev/null 2>&1; 
+          then gh release upload "${TAG}" bin/ip_reader-${TAG}-${ext};
+          else gh release create "${TAG}" bin/ip_reader-${TAG}-${ext};
+          fi
