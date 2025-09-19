@@ -1,7 +1,9 @@
 name: 'C++ programming. Laboratory work 3'
 
 on:
-  workflow_dispatch
+  push:
+    branches: 
+      - lab_3_a
 
 jobs:
   build:
