@@ -4,7 +4,7 @@
 #include <filesystem>
 
 TEST(File, isFileExist) {
-    ASSERT_TRUE(std::filesystem::exists("../ip_filter.tsv"));
+    ASSERT_TRUE(std::filesystem::exists("ip_filter.tsv"));
 }
 
 TEST(File, IsDataCorrect) {

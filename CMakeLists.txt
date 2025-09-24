@@ -9,23 +9,23 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-# include(FetchContent)
-# FetchContent_Declare(
-#   googletest
-#   URL https://github.com/google/googletest/releases/download/v1.17.0/googletest-1.17.0.tar.gz
-# )
-# FetchContent_MakeAvailable(googletest)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/releases/download/v1.17.0/googletest-1.17.0.tar.gz
+)
+FetchContent_MakeAvailable(googletest)
 
 include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
-# file(GLOB TEST_SOURCES "tests/*.cpp")
+file(GLOB TEST_SOURCES "tests/*.cpp")
 
 add_executable(main main.cpp ${SOURCES})
-# add_executable(testing ${TEST_SOURCES} ${SOURCES})
+add_executable(testing ${TEST_SOURCES} ${SOURCES})
 
 target_compile_features(main PRIVATE cxx_std_17)
-# set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
-# target_link_libraries(testing GTest::gtest_main)
+set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+target_link_libraries(testing GTest::gtest_main)
 
 execute_process(
   COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.py
@@ -54,16 +54,16 @@ if (MSVC)
   target_compile_options(main PRIVATE
     /W4
   )
-  # target_compile_options(testing PRIVATE
-  #   /W4
-  # )
+  target_compile_options(testing PRIVATE
+    /W4
+  )
 else ()
   target_compile_options(main PRIVATE
     -Wall -Wextra -pedantic
   )
-  # target_compile_options(testing PRIVATE
-  #   -Wall -Wextra -pedantic
-  # )
+  target_compile_options(testing PRIVATE
+    -Wall -Wextra -pedantic
+  )
 endif()
 
 if (MSVC)
@@ -72,7 +72,7 @@ else ()
     set(CPACK_GENERATOR DEB)
 endif()
 
-# enable_testing()
-# include(GoogleTest)
+enable_testing()
+include(GoogleTest)
 include(CPack)
-# gtest_discover_tests(testing)
+gtest_discover_tests(testing)

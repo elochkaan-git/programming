@@ -29,7 +29,7 @@ jobs:
         run: cmake -B build -S . "$flags"
 
       - name: Build project
-        run: cmake --build build ; cmake --build build --target test ; cmake --build build --target package --config Release
+        run: cmake --build build ; ./bin/testing ; cmake --build build --target package --config Release
           
       - name: Upload Release Asset
         env:

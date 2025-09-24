@@ -21,6 +21,7 @@ IP::split(std::string& ip_) const
             i++;
         }
     }
+    bytes[ptr] = std::stoi(temp_number);
 
     return std::make_tuple(bytes[0], bytes[1], bytes[2], bytes[3]);
 }
