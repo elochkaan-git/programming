@@ -24,7 +24,7 @@ add_executable(main main.cpp ${SOURCES})
 # add_executable(testing ${TEST_SOURCES} ${SOURCES})
 
 target_compile_features(main PRIVATE cxx_std_17)
-# set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
+# set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 # target_link_libraries(testing GTest::gtest_main)
 
 execute_process(
