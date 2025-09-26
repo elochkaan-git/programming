@@ -38,7 +38,7 @@ jobs:
 
       - name: Test project (Windows)
         if: matrix.os == 'windows-latest'
-        run: .\bin\Debug\testing.exe
+        run: .\bin\Release\testing.exe
 
       - name: Build package
         run: cmake --build build --target package --config Release
