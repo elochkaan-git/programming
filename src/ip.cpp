@@ -17,7 +17,7 @@ IP::split(std::string& ip) const
             temp_number = "";
         }
         else {
-            temp_number.push_back(ip_.at(i));
+            temp_number.push_back(ip.at(i));
             i++;
         }
     }
@@ -41,7 +41,7 @@ IP::getIP() const -> decltype(ip_)
     return ip_;
 }
 
-IP::IP(std::string& ip_)
+IP::IP(std::string& ip)
 {
     ip_ = split(ip);
 }
