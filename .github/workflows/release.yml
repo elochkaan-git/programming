@@ -29,8 +29,16 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: cmake -B build -S . -G "Visual Studio 17 2022" -A x64
 
-      - name: Build project
-        run: cmake --build build --config Release; ./bin/testing ; cmake --build build --target package --config Release
+      - name: Test project (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: ./bin/testing
+
+      - name: Test project (Windows)
+        if: matrix.os == 'windows-latest'
+        run: .\bin\Debug\testing.exe
+
+      - name: Build package
+        run: cmake --build build --target package --config Release
           
       - name: Upload Release Asset
         env:
