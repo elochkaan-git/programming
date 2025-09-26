@@ -2,15 +2,15 @@
 #include <iostream>
 
 auto
-IP::split(std::string& ip_) const
+IP::split(std::string& ip) const
 {
     int bytes[4] = {0, 0, 0, 0};
     short int ptr = 0;
 
     std::string temp_number = "";
     unsigned long i = 0;
-    while(i != ip_.size()) {
-        if (ip_.at(i) == '.') {
+    while(i != ip.size()) {
+        if (ip.at(i) == '.') {
             bytes[ptr] = std::stoi(temp_number);
             ptr++;
             i++;
@@ -29,21 +29,21 @@ IP::split(std::string& ip_) const
 void
 IP::print() const
 {
-    std::cout << std::get<0>(ip) << '.'
-              << std::get<1>(ip) << '.'
-              << std::get<2>(ip) << '.'
-              << std::get<3>(ip) << std::endl;
+    std::cout << std::get<0>(ip_) << '.'
+              << std::get<1>(ip_) << '.'
+              << std::get<2>(ip_) << '.'
+              << std::get<3>(ip_) << std::endl;
 }
 
 auto
-IP::getIP() const -> decltype(ip)
+IP::getIP() const -> decltype(ip_)
 {
-    return ip;
+    return ip_;
 }
 
 IP::IP(std::string& ip_)
 {
-    ip = split(ip_);
+    ip_ = split(ip);
 }
 
 IP::IP() {}

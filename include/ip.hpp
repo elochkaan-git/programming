@@ -5,12 +5,12 @@
 struct IP
 {
 private:
-    std::tuple<int, int, int, int> ip;
+    std::tuple<int, int, int, int> ip_;
 
 public:
     IP();
-    IP(std::string& ip_);
-    auto split(std::string& ip_) const;
+    IP(std::string& ip);
+    auto split(std::string& ip) const;
     void print() const;
-    auto getIP() const -> decltype(ip);
+    auto getIP() const -> decltype(ip_);
 };
