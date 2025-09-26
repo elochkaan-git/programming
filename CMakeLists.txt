@@ -28,6 +28,7 @@ set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE
 target_link_libraries(testing GTest::gtest_main)
 
 install(TARGETS main DESTINATION bin)
+install(FILES ${CMAKE_SOURCE_DIR}/ip_filter.tsv DESTINATION bin)
 
 execute_process(
   COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.py
