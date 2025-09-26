@@ -22,15 +22,15 @@ jobs:
           fetch-depth: 0
 
       - name: Configure Cmake
+        shell: bash
         env:
           flags: ${{
-            matrix.os == 'ubuntu-latest' && '-G Unix Makefiles' ||
+            matrix.os == 'ubuntu-latest' && '-G "Unix Makefiles"' ||
             matrix.os == 'windows-latest' && '-G "Visual Studio 17 2022" -A x64'}}
-        run: cmake -B build -S . "$flags"
+        run: cmake -B build -S . $flags
 
       - name: Build project
-        shell: bash
-        run: cmake --build build ; ./bin/testing ; cmake --build build --target package --config Release
+        run: cmake --build build --config Release; ./bin/testing ; cmake --build build --target package --config Release
           
       - name: Upload Release Asset
         env:
