@@ -1,18 +1,16 @@
 #pragma once
 #include <iostream>
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 
 
 template<typename T>
 struct Node {
     T value_;
-    Node* next_;
+    std::unique_ptr<Node<T>> next_;
 
-    Node(T value, Node* next) {
-        value_ = value;
-        next_ = next;
-    }
+    Node(T value) : value_(value) , next_(nullptr) {}
 };
 
 
@@ -20,21 +18,20 @@ template<typename T>
 class List
 {
 private:
-    Node<T>* root_ = nullptr;
-    size_t size_ = 0;
+    std::unique_ptr<Node<T>> root_;
+    size_t size_;
 
 public:
     List();
     List(size_t n, T value);
     List(List& copy);
     List(List&& moved);
-    ~List();
+    ~List() = default;
 
     T& operator [](size_t pos);
     List& operator =(List& other);
     List& operator =(List&& other);
 
-    // T& at(size_t n);
     void open() const;
     void push_back(T value);
     void insert(T value, size_t pos);
@@ -45,8 +42,8 @@ public:
     class Iterator
     {
     private:
-        List* list_ptr_ = nullptr;
-        Node<T>* current_node_ = 0;
+        List* list_ptr_;
+        Node<T>* current_node_;
     
     public:
         Iterator(List* list, size_t index);
@@ -62,39 +59,39 @@ public:
 };
 
 template<typename T>
-List<T>::List() {
-    root_ = NULL;
-    size_ = 0;
+List<T>::List()
+    : root_(nullptr)
+    , size_(0)
+{
 }
 
 template<typename T>
-List<T>::List(size_t n, T value) {
-    root_ = new Node<T>(value, nullptr);
-    Node<T>* current = root_;
-
-    for(size_t i = 1; i < n; ++i) {  // ← i = 1
-        Node<T>* leaf = new Node<T>(value, nullptr);
-        current->next_ = leaf;
-        current = leaf;
+List<T>::List(size_t n, T value)
+    : root_(std::make_unique<Node<T>>(value))
+    , size_(n)
+{
+    for(size_t i = 1; i < n; ++i) {
+        push_back(value);
     }
-    size_ = n;
 }
 
 template<typename T>
-List<T>::List(List& copy) {
+List<T>::List(List& copy)
+{
     if(!copy.root_) {
         root_ = nullptr;
         size_ = 0;
         return;
     }
     else {
-        root_ = new Node<T>(copy.root_->value_, copy.root_->next_);
-        Node<T>* current = root_;
+        root_ = std::make_unique<Node<T>>(copy.root_->value_);
+        Node<T>* _this = root_.get();
+        Node<T>* _copy = copy.root_.get();
 
-        while(current->next_ != nullptr) {
-            Node<T>* new_node = new Node<T>(current->next_->value_, current->next_->next_);
-            current->next_ = new_node;
-            current = new_node;
+        while(_copy->next_) {
+            _this->next_ = std::make_unique<Node<T>>(_copy->next_->value_);
+            _this = _this->next_.get();
+            _copy = _copy->next_.get();
         }
 
         size_ = copy.size_;
@@ -102,31 +99,20 @@ List<T>::List(List& copy) {
 }
 
 template<typename T>
-List<T>::List(List&& moved) {
-    root_ = moved.root_;
+List<T>::List(List&& moved)
+{
+    root_ = std::move(moved.root_);
     size_ = moved.size_;
-    moved.root_ = nullptr;
+    moved.size_ = 0;
 }
 
 template<typename T>
-List<T>::~List() {
-    if(!root_) return;
-
-    Node<T>* begin = root_;
-    Node<T>* next = nullptr;
-    while(begin != nullptr) {
-        next = begin->next_;
-        delete begin;
-        begin = next;
-    }
-}
-
-template<typename T>
-T& List<T>::operator[](size_t pos) {
-    Node<T>* current = root_;
+T& List<T>::operator[](size_t pos)
+{
+    Node<T>* current = root_.get();
     for(size_t i = 0; i < size_; ++i) {
         if(i == pos) return current->value_;
-        else current = current->next_;
+        else current = current->next_.get();
     }
     throw std::out_of_range("You are out of list");
 }
@@ -139,13 +125,14 @@ List<T>& List<T>::operator =(List& other) {
         size_ = 0;
     }
     else {
-        root_ = new Node<T>(other.root_->value_, other.root_->next_);
-        Node<T>* current = root_;
+        root_ = std::make_unique<Node<T>>(other.root_->value_);
+        Node<T>* _this = root_.get();
+        Node<T>* _copy = other.root_.get();
 
-        while(current->next_ != nullptr) {
-            Node<T>* new_node = new Node<T>(current->next_->value_, current->next_->next_);
-            current->next_ = new_node;
-            current = new_node;
+       while(_copy->next_) {
+            _this->next_ = std::make_unique<Node<T>>(_copy->next_->value_);
+            _this = _this->next_.get();
+            _copy = _copy->next_.get();
         }
 
         size_ = other.size_;
@@ -155,56 +142,52 @@ List<T>& List<T>::operator =(List& other) {
 }
 
 template<typename T>
-List<T>& List<T>::operator =(List&& other) {
-    root_ = other.root_;
+List<T>& List<T>::operator =(List&& other)
+{
+    root_ = std::move(other.root_);
     size_ = other.size_;
-    other.root_ = nullptr;
+    other.size_ = 0;
+
     return *this;
 }
 
-// template<typename T>
-// T& List<T>::at(size_t n)
-// {
-//     if(data_begin_ + n >= data_begin_ + size_) throw std::out_of_range("You're out of the List");
-//     return *(data_begin_ + n);
-// }
-
 template<typename T>
-void List<T>::push_back(T value) {
-    Node<T>* last = nullptr;
+void List<T>::push_back(T value)
+{
     if(!root_) {
-        root_ = new Node<T>(value, nullptr);
-        ++size_;
-        return;
+        root_ = std::make_unique<Node<T>>(value);
     }
-    last = root_;
-
-    while (last->next_ != nullptr) last = last->next_;
-    Node<T>* new_node = new Node<T>(value, nullptr);
-    last->next_ = new_node;
+    else {
+        Node<T>* last = root_.get();
+        while (last->next_) last = last->next_.get();
+        last->next_ = std::make_unique<Node<T>>(value);
+    }
     ++size_;
 }
 
 template<typename T>
-void List<T>::insert(T value, size_t pos) {
+void List<T>::insert(T value, size_t pos)
+{
     if(pos > size_) throw std::out_of_range("You're out of the List");
     else if(pos == size_) push_back(value);
     else if(pos == 0) {
-        Node<T>* new_node = new Node<T>(value, root_);
-        root_ = new_node;
+        std::unique_ptr<Node<T>> new_node = std::make_unique<Node<T>>(value);
+        new_node->next_ = std::move(root_);
+        root_ = std::move(new_node);
         ++size_;
     }
     else {
         size_t i = 0;
-        Node<T>* current = root_;
+        Node<T>* current = root_.get();
         Node<T>* previous = nullptr;
         while(i != pos) {
             previous = current;
-            current = current->next_;
+            current = current->next_.get();
             ++i;
         }
-        Node<T>* new_node = new Node<T>(value, current);
-        previous->next_ = new_node;
+        std::unique_ptr<Node<T>> new_node = std::make_unique<Node<T>>(value);
+        new_node->next_ = std::move(previous->next_);
+        previous->next_ = std::move(new_node);
         ++size_;
     }
 }
@@ -213,42 +196,27 @@ template<typename T>
 void List<T>::erase(size_t pos) {
     if(pos >= size_) throw std::out_of_range("You're out of the List");
     else if(pos == 0) {
-        Node<T>* next = root_->next_;
-        delete root_;
-        root_ = next;
-        --size_;
+        root_ = std::move(root_->next_);
     }
     else {
         size_t i = 0;
-        Node<T>* current = root_;
+        Node<T>* current = root_.get();
         Node<T>* previous = nullptr;
         while(i != pos) {
             previous = current;
-            current = current->next_;
+            current = current->next_.get();
             ++i;
         }
-        Node<T>* next = current->next_;
-        delete current;
-        previous->next_ = next;
-        --size_;
+        previous->next_ = std::move(current->next_);
     }
+    --size_;
 }
 
 template<typename T>
 void List<T>::clear()
 {
-    if(!root_) return;
-
-    Node<T>* begin = root_;
-    Node<T>* next = nullptr;
-    while(begin != nullptr) {
-        next = begin->next_;
-        delete begin;
-        begin = next;
-    }
-
+    root_.reset();
     size_ = 0;
-    root_ = nullptr;
 }
 
 template<typename T>
@@ -260,53 +228,60 @@ size_t List<T>::size() const
 template<typename T>
 void List<T>::open() const
 {      
-    Node<T>* current = root_;
+    Node<T>* current = root_.get();
     for(size_t i = 0; i < size_; ++i) {
         std::cout << current->value_ << ' ';
-        current = current->next_;
+        current = current->next_.get();
     }
 }
 
 
 template<typename T>
-typename List<T>::Iterator List<T>::begin() {
+typename List<T>::Iterator List<T>::begin()
+{
     return {this, 0};
 }
 
 template<typename T>
-typename List<T>::Iterator List<T>::end() {
+typename List<T>::Iterator List<T>::end()
+{
     return {this, size_};
 }
 
 
 template<typename T>
-List<T>::Iterator::Iterator(List<T>* list, size_t index) {
+List<T>::Iterator::Iterator(List<T>* list, size_t index)
+{
     list_ptr_ = list;
     
     size_t i = 0;
-    current_node_ = list->root_;
+    current_node_ = list->root_.get();
     while(i != index) {
-        current_node_ = current_node_->next_;
+        current_node_ = current_node_->next_.get();
         ++i;
     }
 }
 
 template<typename T>
-T& List<T>::Iterator::operator*() {
+T& List<T>::Iterator::operator*()
+{
     return current_node_->value_;
 }
 
 template<typename T>
-bool List<T>::Iterator::operator !=(const List<T>::Iterator& other) const {
+bool List<T>::Iterator::operator !=(const List<T>::Iterator& other) const
+{
     return current_node_ != other.current_node_;
 }
 
 template<typename T>
-bool List<T>::Iterator::operator ==(const List<T>::Iterator& other) const {
+bool List<T>::Iterator::operator ==(const List<T>::Iterator& other) const
+{
     return current_node_ == other.current_node_;
 }
 
 template<typename T>
-void List<T>::Iterator::operator ++() {
-   current_node_ = current_node_->next_;
+void List<T>::Iterator::operator ++()
+{
+   current_node_ = current_node_->next_.get();
 }

@@ -1,19 +1,22 @@
 #pragma once
 #include <iostream>
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
+#include <utility>
 
 
 template<typename T>
 struct NodeDL {
     T value_;
-    NodeDL* next_;
-    NodeDL* prev_;
+    std::unique_ptr<NodeDL<T>> next_;
+    NodeDL<T>* prev_;
 
-    NodeDL(T value, NodeDL* next, NodeDL* prev) {
-        value_ = value;
-        next_ = next;
-        prev_ = prev;
+    NodeDL(T value) 
+        : value_(value)
+        , next_(nullptr)
+        , prev_(nullptr)
+    {
     }
 };
 
@@ -22,22 +25,20 @@ template<typename T>
 class DoubleList
 {
 private:
-    NodeDL<T>* root_ = nullptr;
-    NodeDL<T>* tail_ = nullptr;
-    size_t size_ = 0;
+    std::unique_ptr<NodeDL<T>> root_;
+    NodeDL<T>* tail_;
+    size_t size_;
 
 public:
     DoubleList();
     DoubleList(size_t n, T value);
     DoubleList(DoubleList& copy);
     DoubleList(DoubleList&& moved);
-    ~DoubleList();
 
     T& operator [](size_t pos);
     DoubleList& operator =(DoubleList& other);
     DoubleList& operator =(DoubleList&& other);
 
-    // T& at(size_t n);
     void open() const;
     void push_back(T value);
     void insert(T value, size_t pos);
@@ -82,100 +83,93 @@ public:
 };
 
 template<typename T>
-DoubleList<T>::DoubleList() {
-    root_ = NULL;
-    tail_ = NULL;
-    size_ = 0;
+DoubleList<T>::DoubleList()
+    : root_(nullptr)
+    , tail_(nullptr)
+    , size_(0)
+{
 }
 
 template<typename T>
-DoubleList<T>::DoubleList(size_t n, T value) {
-    root_ = new NodeDL<T>(value, nullptr, nullptr);
-    NodeDL<T>* current = root_;
+DoubleList<T>::DoubleList(size_t n, T value)
+    : root_(std::make_unique<NodeDL<T>>(value))
+    , tail_(nullptr)
+    , size_(n)
+{
+    NodeDL<T>* current = root_.get();
 
     for(size_t i = 1; i < n; ++i) {
-        NodeDL<T>* leaf = new NodeDL<T>(value, nullptr, current);
-        current->next_ = leaf;
-        current = leaf;
+        current->next_ = std::make_unique<NodeDL<T>>(value);
+        current->next_->prev_ = current;
+        current = current->next_.get();
     }
-    size_ = n;
     tail_ = current;
 }
 
 template<typename T>
-DoubleList<T>::DoubleList(DoubleList& copy) {
-    if(!copy.root_) {
-        root_ = NULL;
-        tail_ = NULL;
-        size_ = 0;
-    }
-    else {
-        root_ = new NodeDL<T>(copy.root_->value_, copy.root_->next_, nullptr);
-        NodeDL<T>* current = root_;
+DoubleList<T>::DoubleList(DoubleList& copy)
+    : root_(nullptr)
+    , tail_(nullptr)
+    , size_(copy.size_)
+{
+    if(copy.root_) {
+        root_ = std::make_unique<NodeDL<T>>(copy.root_->value_);
+        NodeDL<T>* _this = root_.get();
+        NodeDL<T>* _copy = copy.root_.get();
 
-        while(current->next_ != nullptr) {
-            NodeDL<T>* new_node = new NodeDL<T>(current->next_->value_, current->next_->next_, current);
-            current->next_ = new_node;
-            current = new_node;
+        while(_copy->next_) {
+            _this->next_ = std::make_unique<NodeDL<T>>(_copy->next_->value_);
+            _this = _this->next_.get();
+            _copy = _copy->next_.get();
         }
 
-        tail_ = current;
-        size_ = copy.size_;
+        tail_ = _this;
     }
 }
 
 template<typename T>
-DoubleList<T>::DoubleList(DoubleList&& moved) {
-    root_ = moved.root_;
+DoubleList<T>::DoubleList(DoubleList&& moved)
+{
+    root_ = std::move(moved.root_);
     tail_ = moved.tail_;
     size_ = moved.size_;
-    moved.root_ = nullptr;
+
     moved.tail_ = nullptr;
+    moved.size_ = 0;
 }
 
 template<typename T>
-DoubleList<T>::~DoubleList() {
-    if(!root_) return;
-
-    NodeDL<T>* begin = root_;
-    NodeDL<T>* next = nullptr;
-    while(begin != tail_) {
-        next = begin->next_;
-        delete begin;
-        begin = next;
-    }
-    delete tail_;
-}
-
-template<typename T>
-T& DoubleList<T>::operator[](size_t pos) {
-    NodeDL<T>* current = root_;
+T& DoubleList<T>::operator[](size_t pos)
+{
+    NodeDL<T>* current = root_.get();
     for(size_t i = 0; i < size_; ++i) {
         if(i == pos) return current->value_;
-        else current = current->next_;
+        else current = current->next_.get();
     }
     throw std::out_of_range("You are out of list");
 }
 
 template<typename T>
-DoubleList<T>& DoubleList<T>::operator =(DoubleList& other) {
+DoubleList<T>& DoubleList<T>::operator =(DoubleList& other)
+{
     clear();
     if(!other.root_) {
-        root_ = NULL;
-        tail_ = NULL;
+        root_ = nullptr;
+        tail_ = nullptr;
         size_ = 0;
     }
     else {
-        root_ = new NodeDL<T>(other.root_->value_, other.root_->next_, other.root_->prev_);
-        NodeDL<T>* current = root_;
+        root_ = std::make_unique<NodeDL<T>>(other.root_->value_);
+        NodeDL<T>* _this = root_.get();
+        NodeDL<T>* _copy = other.root_.get();
 
-        while(current->next_ != nullptr) {
-            NodeDL<T>* new_node = new NodeDL<T>(current->next_->value_, current->next_->next_, current);
-            current->next_ = new_node;
-            current = new_node;
+        while(_copy->next_) {
+            _this->next_ = std::make_unique<NodeDL<T>>(_copy->next_->value_);
+            _this = _this->next_.get();
+            _copy = _copy->next_.get();
         }
 
-        tail_ = current;
+        tail_ = _this;
         size_ = other.size_;
     }
 
@@ -183,115 +177,93 @@ DoubleList<T>& DoubleList<T>::operator =(DoubleList& other) {
 }
 
 template<typename T>
-DoubleList<T>& DoubleList<T>::operator =(DoubleList&& other) {
-    root_ = other.root_;
+DoubleList<T>& DoubleList<T>::operator =(DoubleList&& other)
+{
+    root_ = std::move(other.root_);
     tail_ = other.tail_;
     size_ = other.size_;
-    other.root_ = nullptr;
     other.tail_ = nullptr;
+    other.size_ = 0;
     return *this;
 }
 
-// template<typename T>
-// T& DoubleList<T>::at(size_t n)
-// {
-//     if(data_begin_ + n >= data_begin_ + size_) throw std::out_of_range("You're out of the DoubleList");
-//     return *(data_begin_ + n);
-// }
-
 template<typename T>
-void DoubleList<T>::push_back(T value) {
-    NodeDL<T>* node = new NodeDL<T>(value, nullptr, nullptr);
+void DoubleList<T>::push_back(T value)
+{
     if(!root_) {
-        root_ = node;
-        tail_ = node;
-        ++size_;
+        root_ = std::make_unique<NodeDL<T>>(value);
+        tail_ = root_.get();
     }
     else {
-        node->prev_ = tail_;
-        tail_->next_ = node;
-        tail_ = node;
-        ++size_;
+        tail_->next_ = std::make_unique<NodeDL<T>>(value);
+        tail_->next_->prev_ = tail_;
+        tail_ = tail_->next_.get();
     }
+    ++size_;
 }
 
 template<typename T>
-void DoubleList<T>::insert(T value, size_t pos) {
+void DoubleList<T>::insert(T value, size_t pos)
+{
     if(pos > size_) throw std::out_of_range("You're out of the DoubleList");
     else if(pos == size_) push_back(value);
     else if(pos == 0) {
-        NodeDL<T>* new_node = new NodeDL<T>(value, root_, nullptr);
-        root_->prev_ = new_node;
-        root_ = root_->prev_;
+        std::unique_ptr<NodeDL<T>> new_node = std::make_unique<NodeDL<T>>(value);
+        new_node->next_ = std::move(root_);
+        root_ = std::move(new_node);
+        root_->next_->prev_ = root_.get();
         ++size_;
     }
     else {
         size_t i = 0;
-        NodeDL<T>* current = root_;
+        NodeDL<T>* current = root_.get();
         while(i != pos) {
-            current = current->next_;
+            current = current->next_.get();
             ++i;
         }
-        NodeDL<T>* new_node = new NodeDL<T>(value, current, current->prev_);
-        current->prev_->next_ = new_node;
-        current->prev_ = new_node;
+        std::unique_ptr<NodeDL<T>> new_node = std::make_unique<NodeDL<T>>(value);
+        new_node->prev_ = current->prev_;
+        new_node->next_ = std::move(current->prev_->next_);
+        new_node->prev_->next_ = std::move(new_node);
+        current->prev_ = current->prev_->next_.get();
         ++size_;
     }
 }
 
 template<typename T>
-void DoubleList<T>::erase(size_t pos) {
+void DoubleList<T>::erase(size_t pos)
+{
     if(pos >= size_) throw std::out_of_range("You're out of the DoubleList");
     else if(size_ == 1) {
-        delete root_;
-        root_ = NULL;
-        tail_ = NULL;
-        size_ = 0;
-        return;
+        clear();
     }
     else if(pos == size_ - 1) {
-        NodeDL<T>* new_tail = tail_->prev_;
-        delete tail_;
-        tail_ = new_tail;
-        --size_;
+        tail_ = tail_->prev_;
+        tail_->next_.reset();
     }
     else if(pos == 0) {
-        NodeDL<T>* next = root_->next_;
-        delete root_;
-        root_ = next;
-        --size_;
+        root_ = std::move(root_->next_);
+        root_->prev_ = nullptr;
     }
     else {
         size_t i = 0;
-        NodeDL<T>* current = root_;
+        NodeDL<T>* current = root_.get();
         while(i != pos) {
-            current = current->next_;
+            current = current->next_.get();
             ++i;
         }
-        current->prev_->next_ = current->next_;
         current->next_->prev_ = current->prev_;
-        delete current;
-        --size_;
+        current->prev_->next_ = std::move(current->next_);
     }
+    --size_;
 }
 
 template<typename T>
 void DoubleList<T>::clear()
 {
-    if(!root_) return;
-
-    NodeDL<T>* begin = root_;
-    NodeDL<T>* next = nullptr;
-    while(begin != tail_) {
-        next = begin->next_;
-        delete begin;
-        begin = next;
-    }
-    delete tail_;
-
-    size_ = 0;
-    root_ = nullptr;
+    root_.reset();
     tail_ = nullptr;
+    size_ = 0;
 }
 
 template<typename T>
@@ -303,18 +275,17 @@ size_t DoubleList<T>::size() const
 template<typename T>
 void DoubleList<T>::open() const
 {      
-    NodeDL<T>* current = root_;
-    while(current != tail_) {
+    NodeDL<T>* current = root_.get();
+    while(current) {
         std::cout << current->value_ << ' ';
-        current = current->next_;
+        current = current->next_.get();
     }
-    std::cout << tail_->value_;
 }
 
 
 template<typename T>
 typename DoubleList<T>::Iterator DoubleList<T>::begin() {
-    return {this, root_};
+    return {this, root_.get()};
 }
 
 template<typename T>
@@ -356,7 +327,7 @@ bool DoubleList<T>::Iterator::operator ==(const DoubleList<T>::Iterator& other) 
 
 template<typename T>
 void DoubleList<T>::Iterator::operator ++() {
-   current_node_ = current_node_->next_;
+   current_node_ = current_node_->next_.get();
 }
 
 
