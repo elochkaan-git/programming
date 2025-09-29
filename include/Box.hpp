@@ -32,6 +32,7 @@ public:
     void insert(T value, size_t pos);
     void erase(size_t pos);
     size_t size() const;
+    size_t capacity() const;
 
     class Iterator
     {
@@ -149,7 +150,11 @@ void Box<T>::push_back(T value) {
 template<typename T>
 void Box<T>::insert(T value, size_t pos)
 {
-    if(pos >= size_) throw std::out_of_range("You're out of the Box! n must be less than " + std::to_string(size_));
+    if(pos > size_) throw std::out_of_range("You're out of the Box! n must be less than " + std::to_string(size_));
+    else if(pos == size_) {
+        push_back(value);
+        return;
+    }
     if(size_ == capacity_) capacity_ = (capacity_ == 0) ? 1 : capacity_ * 2;
     ++size_;
     
@@ -175,6 +180,12 @@ template<typename T>
 size_t Box<T>::size() const
 {
     return size_;
+}
+
+template<typename T>
+size_t Box<T>::capacity() const
+{
+    return capacity_;
 }
 
 template<typename T>

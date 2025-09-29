@@ -73,6 +73,7 @@ List<T>::List(size_t n, T value)
     for(size_t i = 1; i < n; ++i) {
         push_back(value);
     }
+    size_ -= n - 1;
 }
 
 template<typename T>
