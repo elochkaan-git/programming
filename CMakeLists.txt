@@ -27,15 +27,15 @@ target_compile_features(main PRIVATE cxx_std_17)
 set_target_properties(testing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 target_link_libraries(testing GTest::gtest_main)
 
+install(TARGETS main DESTINATION bin)
+
 execute_process(
   COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/update_tag.py
-  RESULT_VARIABLE exit_code
 )
 execute_process(
   COMMAND git describe --abbrev=0 --tags
   OUTPUT_VARIABLE tag
 )
-
 string(LENGTH ${tag} tag_len)
 math(EXPR new_tag_len "${tag_len} - 1")
 string(SUBSTRING "${tag}" 0 ${new_tag_len} clear_tag)
