@@ -13,6 +13,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/releases/download/v1.17.0/googletest-1.17.0.tar.gz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(googletest)
 
@@ -68,7 +69,7 @@ else ()
   )
 endif()
 
-if (MSVC)
+if (MSVC OR MSYS)
     set(CPACK_GENERATOR ZIP)
 else ()
     set(CPACK_GENERATOR DEB)

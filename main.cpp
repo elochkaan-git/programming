@@ -1,4 +1,6 @@
+#include <iostream>
+
 int main() {
-    // Run tests to see result :^)
+    std::cout << "// Run tests to see result :^)";
     return 0;
 }
