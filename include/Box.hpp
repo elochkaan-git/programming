@@ -48,7 +48,6 @@ public:
         bool operator ==(Box<T>::Iterator& other);
         void operator ++();
     };
-
     Iterator begin();
     Iterator end();
 };
@@ -90,9 +89,11 @@ Box<T>::Box(Box& copy)
 template<typename T>
 Box<T>::Box(Box&& moved)
     : data_begin_(std::move(moved.data_begin_))
-    , size_(std::move(moved.size_))
-    , capacity_(std::move(moved.capacity_))
+    , size_(moved.size_)
+    , capacity_(moved.capacity_)
 {
+    moved.size_ = 0;
+    moved.capacity_ = 0;
 }
 
 template<typename T>
@@ -115,8 +116,8 @@ template<typename T>
 Box<T>& Box<T>::operator =(Box&& other)
 {
     data_begin_ = std::move(other.data_begin_);
-    size_ = std::move(other.size_);
-    capacity_ = std::move(other.capacity_);
+    size_ = other.size_;
+    capacity_ = other.capacity_;
 
     other.size_ = 0;
     other.capacity_ = 0;
@@ -132,7 +133,8 @@ T& Box<T>::at(size_t n)
 }
 
 template<typename T>
-void Box<T>::push_back(T value) {
+void Box<T>::push_back(T value)
+{
     if(size_ < capacity_) {
         data_begin_[size_] = value;
         ++size_;

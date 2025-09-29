@@ -15,6 +15,40 @@ TEST(DoubleList, CreatingDoubleListWithValues) {
     for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj[i], box[i]);
 }
 
+TEST(DoubleList, CreatingDoubleListWithCopy) {
+    std::vector<int> test_obj(10, 10);
+    DoubleList<int> box(10, 10);
+    DoubleList<int> box_copy(box);
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj[i], box_copy[i]);
+}
+
+TEST(DoubleList, CreatingDoubleListWithMoved) {
+    std::vector<int> test_obj(10, 10);
+    DoubleList<int> box(10, 10);
+    DoubleList<int> box_copy(std::move(box));
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj[i], box_copy[i]);
+    EXPECT_EQ(box_copy.size(), test_obj.size());
+    EXPECT_EQ(box.size(), 0);
+}
+
+TEST(DoubleList, Equal) {
+    std::vector<int> test_obj(10, 10);
+    DoubleList<int> box(10, 10);
+    DoubleList<int> box_copy;
+    box_copy = box;
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj[i], box_copy[i]);
+}
+
+TEST(DoubleList, EqualMoved) {
+    std::vector<int> test_obj(10, 10);
+    DoubleList<int> box(10, 10);
+    DoubleList<int> box_copy;
+    box_copy = std::move(box);
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj[i], box_copy[i]);
+    EXPECT_EQ(box_copy.size(), test_obj.size());
+    EXPECT_EQ(box.size(), 0);
+}
+
 TEST(DoubleList, PushBack) {
     std::vector<int> cor = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     DoubleList<int> box;

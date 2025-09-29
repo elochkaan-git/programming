@@ -21,6 +21,42 @@ TEST(Box, CreatingBoxWithValues) {
     for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj.at(i), box.at(i));
 }
 
+TEST(Box, CreatingBoxWithCopy) {
+    std::vector<int> test_obj(10, 10);
+    Box<int> box(10, 10);
+    Box<int> box_copy(box);
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj.at(i), box_copy.at(i));
+}
+
+TEST(Box, CreatingBoxWithMoved) {
+    std::vector<int> test_obj(10, 10);
+    Box<int> box(10, 10);
+    Box<int> box_copy(std::move(box));
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj.at(i), box_copy.at(i));
+    EXPECT_EQ(box_copy.size(), test_obj.size());
+    EXPECT_EQ(box.size(), 0);
+    EXPECT_EQ(box.capacity(), 0);
+}
+
+TEST(Box, Equal) {
+    std::vector<int> test_obj(10, 10);
+    Box<int> box(10, 10);
+    Box<int> box_copy;
+    box_copy = box;
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj.at(i), box_copy.at(i));
+}
+
+TEST(Box, EqualMoved) {
+    std::vector<int> test_obj(10, 10);
+    Box<int> box(10, 10);
+    Box<int> box_copy;
+    box_copy = std::move(box);
+    for(size_t i = 0; i < test_obj.size(); ++i) ASSERT_EQ(test_obj.at(i), box_copy.at(i));
+    EXPECT_EQ(box_copy.size(), test_obj.size());
+    EXPECT_EQ(box.size(), 0);
+    EXPECT_EQ(box.capacity(), 0);
+}
+
 TEST(Box, PushBack) {
     std::vector<int> cor = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     Box<int> box(10);
